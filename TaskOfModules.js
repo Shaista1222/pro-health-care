@@ -39,7 +39,7 @@ fs.readFile("doctorProfile.json","utf8",(err,data)=>{
         return;
     }
     const parseToJson= JSON.parse(data);
-    console.log(parseToJson)
+    // console.log(parseToJson)
     parseToJson.map(item=>{
         console.log(item.firstName);
     })
@@ -59,7 +59,7 @@ fs.readFile("PatientProfile.json","utf8",(error,datas)=>{
         return;
     }
     const parseToJson= JSON.parse(datas);
-    console.log(parseToJson)
+    // console.log(parseToJson)
     parseToJson.map(item=>{
         console.log(item.firstName+' '+item.lastName);
 
@@ -71,3 +71,35 @@ fs.readFile("PatientProfile.json","utf8",(error,datas)=>{
 //         console.log("\nDeleted file: example_file.txt");
 //     }
 // })))
+
+const data = fs.readFileSync('PatientProfile.json',
+    { encoding: 'utf8'});
+//encoding utf8 will not give response in binary
+const parseToJson= JSON.parse(data);
+// console.log(parseToJson)
+parseToJson.map(item=>{
+    console.log("Data",item.firstName+' '+item.lastName);
+
+})
+
+// Promise-based operations return a promise that is fulfilled when the asynchronous operation is complete.
+
+    // const { unlink } = require('node:fs/promises');
+
+// (async function(path) {
+//     try {
+//         await unlink(path);
+//         console.log(`successfully deleted ${path}`);
+//     } catch (error) {
+//         console.error('there was an error:', error.message);
+//     }
+// })('/tmp/hello');
+
+//handle the resolved value of the Promise
+// fs.readFile('PatientProfile.json', 'utf8')
+//     .then(data => {
+//         console.log('File contents:', data)
+//     })
+//     .catch(err => {
+//         console.error('Error reading file:', err);
+//     });

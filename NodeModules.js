@@ -10,6 +10,8 @@ const fs = require('fs');
 // console.log(path.parse('C:/Users/DELL/WebstormProjects/untitled1/NodeModules.js'))
 // const getFileName=path.parse('C:/Users/DELL/WebstormProjects/untitled1/NodeModules.js')
 // console.log('FileNam: ',getFileName.name)
+//JOINS= joins all given path,The path.join() method joins the specified path segments into one p
+// var x = path.join('Users', 'Refsnes', 'demo_path.js');
 
 //-----FS-----
 // fs.writeFileSync("writeFile.txt","Its about priorities")
