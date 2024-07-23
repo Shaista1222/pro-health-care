@@ -6,11 +6,3 @@ myEmitter.on('event', (a, b) => {
     // Prints: a b {}
 });
 myEmitter.emit('event', 'a', 'b');
-
-
-myEmitter.on('event', (a, b) => {
-    setImmediate(() => {
-        console.log('this happens asynchronously');
-    });
-});
-myEmitter.emit('event', 'a', 'b');
