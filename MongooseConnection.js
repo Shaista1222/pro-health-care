@@ -77,7 +77,7 @@ const database = 'Hospital_Managmenet';
         console.log('count',await col.countDocuments({firstName:'noshera'}))
         // Indexes make searches faster. Without indexes, MongoDB performs a collection scan, which can be slow if the collection has many documents.
         // /{ firstName: 1 } specifies that the index should be created on the firstName field, with 1 indicating ascending order. Use -1 for descending order.
-        const rest=await col.createIndex( { firstNamw: 1 } )
+        const rest=await col.createIndex( { firstName: 1 } )
         console.log(rest)
         // const stats=await col.stats()
         // console.log("data size",stats.size())
