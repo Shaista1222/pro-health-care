@@ -7,15 +7,21 @@ dbConnection()
 
 router.post('/Register', async(req, res) => {
     try {
+
         const { name,email,password } = req.body;
-        const newUser= await User.create({
-            name:name,
-            email:email,
-            password:password
-        })
-        // const saved= await newUser.save();
-        res.json({ success: true, User: newUser });
-        console.log("Successfully registered")
+        const userAvailable=await User.findOne({email})
+        if(userAvailable){
+            res.send({message:"User already registered"})
+        }else {
+            const newUser = await User.create({
+                name: name,
+                email: email,
+                password: password
+            })
+            // const saved= await newUser.save();
+            res.json({success: true, User: newUser});
+            console.log("Successfully registered")
+        }
     }catch (e) {
         console.error(e);
         res.json({ success: false });
