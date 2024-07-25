@@ -10,10 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "joi": "^17.13.3",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.1",
+    "mongoose-jsonschema": "^0.3.0",
     "winston": "^3.13.1"
   }
 }

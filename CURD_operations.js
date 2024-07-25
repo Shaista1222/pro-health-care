@@ -1,9 +1,11 @@
 
 const express = require('express')
 const app = express();
+require('dotenv').config();
 const dbConnection=require('./mongoose');
-const Patient = require('./Models/Patient');
+const Patient = require('./models/Patient');
 const {ObjectId} = require("mongodb");
+const port = process.env.PORT
 //The mongoose. model() function of the mongoose module is used to create a collection of a particular database of MongoDB.
 //find().where('pets').all(['dog', 'cat', 'ferret']);
 dbConnection().then(()=>{
@@ -73,6 +75,6 @@ const queries=async () => {
 
 queries()
 createUser()
-const port =  5000;
+
 app.listen(port, () => console.log(`Listening on port ${port}...`));
 
