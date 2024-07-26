@@ -1,3 +1,9 @@
 node_modules/
-pro-health-care/
-.idea/
+
+.gitignore.txt
+
+# Log files
+*.log
+
+# Environment files
+.env
