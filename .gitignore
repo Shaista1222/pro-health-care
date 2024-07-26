@@ -1,0 +1,9 @@
+node_modules/
+
+.gitignore.txt
+
+# Log files
+*.log
+
+# Environment files
+.env
