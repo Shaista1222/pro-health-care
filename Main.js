@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const Register=require('./Register');
+const Register=require('./router/Register');
 const port = process.env.PORT || 3000;
 const dbConnection = require('./mongoose');
 

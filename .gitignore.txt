@@ -1,9 +1,11 @@
+# Node modules
 node_modules/
-
-.gitignore.txt
 
 # Log files
 *.log
 
 # Environment files
 .env
+
+# Ignore the .gitignore file itself
+.gitignore
