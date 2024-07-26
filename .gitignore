@@ -1,6 +1,9 @@
 # Node modules
 node_modules/
 
+# Idea folder
+.idea/
+
 # Log files
 *.log
 
