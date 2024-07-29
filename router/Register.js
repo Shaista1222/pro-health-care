@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const auth = require('../middleware/Auth');
 
 router.post('/Register', async(req, res) => {
     try {
@@ -41,11 +42,19 @@ router.post('/login',async(req, res) => {
         }
 
         if(user && comparePass){
-            res.status(200).json({message:"Successfully logged in"})
+
+           return res.status(200).json({
+                message:"Successfully logged in",
+                token:await user.generateToken(),
+                id:user._id.toString()});
+
         }else res.send("Wrong email or password");
     }catch (e) {
         console.error(e);
     }
 })
+router.get('/protected', auth, (req, res) => {
+    res.json({ msg: 'This is a protected route' });
+});
 
 module.exports=router
