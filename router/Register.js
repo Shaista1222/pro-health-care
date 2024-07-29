@@ -7,7 +7,7 @@ const auth = require('../middleware/Auth');
 router.post('/Register', async(req, res) => {
     try {
 
-        const { name,email,password } = req.body;
+        const { name,email,password,role } = req.body;
         const salt = await bcrypt.genSalt(10);
         const userPassword=await bcrypt.hash(password,salt);
         const userAvailable=await User.findOne({email})
@@ -17,7 +17,8 @@ router.post('/Register', async(req, res) => {
             const newUser = await User.create({
                 name: name,
                 email: email,
-                password: userPassword
+                password: userPassword,
+                role:role
             })
             // const saved= await newUser.save();
             res.json({success: true, User: newUser});
@@ -28,17 +29,25 @@ router.post('/Register', async(req, res) => {
         res.json({ success: false });
     }
 })
-router.post('/login',async(req, res) => {
+router.post('/login',async(req, res,next) => {
     try {
         const {email,password} = req.body;
 
         const user = await User.findOne({email});
         if (!user) {
-            return res.status(400).json({ errors: "Please provide correct credentials" });
+            const err=new Error('Please provide correct credentials to enter')
+            err.status = 'fail';
+            err.statusCode=400
+            next(err)
+           // return res.status(400).json({ errors: "Please provide correct credentials" });
         }
         let comparePass =await bcrypt.compare(password, user.password)
         if (!comparePass) {
-            return res.status(400).json({ errors: "Please provide correct credentials" });
+            const err=new Error('Please provide correct credentials to enter')
+            err.status = 'fail';
+            err.statusCode=400
+            next(err)
+            // return res.status(400).json({ errors: "Please provide correct credentials" });
         }
 
         if(user && comparePass){
