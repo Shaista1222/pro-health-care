@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const auth = require('../middleware/Auth');
 
-router.post('/Register', async(req, res) => {
+router.post('/Register', async(req, res,next) => {
     try {
 
         const { name,email,password,role } = req.body;
@@ -12,7 +12,11 @@ router.post('/Register', async(req, res) => {
         const userPassword=await bcrypt.hash(password,salt);
         const userAvailable=await User.findOne({email})
         if(userAvailable){
-            res.send({message:"User already registered"})
+            const err=new Error('User already registered')
+            err.status = 'fail';
+            err.statusCode=400
+            next(err)
+            // res.send({message:"User already registered"})
         }else {
             const newUser = await User.create({
                 name: name,
@@ -21,8 +25,10 @@ router.post('/Register', async(req, res) => {
                 role:role
             })
             // const saved= await newUser.save();
-            res.json({success: true, User: newUser});
-            console.log("Successfully registered")
+            const err=new Error('Successfully registered.')
+            err.status = 'success';
+            err.statusCode=200
+            next(err)
         }
     }catch (e) {
         console.error(e);
@@ -57,7 +63,12 @@ router.post('/login',async(req, res,next) => {
                 token:await user.generateToken(),
                 id:user._id.toString()});
 
-        }else res.send("Wrong email or password");
+        }else {
+            const err=new Error('Wrong email or password')
+            err.status = 'fail';
+            err.statusCode=400
+            next(err)
+        }
     }catch (e) {
         console.error(e);
     }
