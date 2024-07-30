@@ -26,4 +26,16 @@ const authenticte=(req,res,next)=>{
         // console.error(e)
     }
 }
-module.exports = authenticte;
+const permission=(req,res,next)=>{
+    if(req.user.role !== req.body.role){
+        const err= new Error("You can not read the file")
+        err.status = 'fail';
+        err.statusCode=401
+        next(err)
+    }
+    const err= new Error("read the file")
+    err.status = 'success';
+    err.statusCode=200
+    next(err)
+}
+module.exports = {authenticte, permission};

@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
-const auth = require('../middleware/Auth');
+// const auth = require('../middleware/Auth');
+const {permission,authenticte} = require("../middleware/Auth");
+const fs = require("node:fs");
 
 router.post('/Register', async(req, res,next) => {
     try {
@@ -73,8 +75,13 @@ router.post('/login',async(req, res,next) => {
         console.error(e);
     }
 })
-router.get('/protected', auth, (req, res) => {
+router.get('/protected', authenticte, (req, res) => {
     res.json({ msg: 'This is a protected route' });
 });
-
+router.get('/doctor', authenticte, permission,(req, res, next) => {
+    const err= new Error("Doctor File")
+    err.status = 'success';
+    err.statusCode=200
+    next(err)
+})
 module.exports=router
