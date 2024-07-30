@@ -26,16 +26,35 @@ const authenticte=(req,res,next)=>{
         // console.error(e)
     }
 }
-const permission=(req,res,next)=>{
-    if(req.user.role !== req.body.role){
-        const err= new Error("You can not read the file")
-        err.status = 'fail';
-        err.statusCode=401
+const authorize=(role)=>{
+    return (req,res,next)=>{
+        if(req.user.role !== role){
+            const err= new Error("You can not read the file")
+            err.status = 'fail';
+            err.statusCode=401
+            next(err)
+        }
+        const err= new Error("read the file")
+        err.status = 'success';
+        err.statusCode=200
         next(err)
     }
-    const err= new Error("read the file")
-    err.status = 'success';
-    err.statusCode=200
-    next(err)
 }
-module.exports = {authenticte, permission};
+const authorizeAll=(...role)=>{
+    return (req,res,next)=>{
+        role.forEach(roles=>{
+           if(roles.includes(req.user.role)){
+               const err= new Error("You are valid to hit the endpoint")
+               err.status = 'success';
+               err.statusCode=200
+               next(err)
+              // res.status(200).send('authorized')
+           }
+            const err= new Error("You are not valid user, you can not enter")
+            err.status = 'fail';
+            err.statusCode=401
+            next(err)
+        })
+    }
+}
+module.exports = {authenticte, authorize, authorizeAll};
