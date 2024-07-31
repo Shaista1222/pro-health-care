@@ -34,10 +34,11 @@ const authorize=(role)=>{
             err.statusCode=401
             next(err)
         }
-        const err= new Error("read the file")
-        err.status = 'success';
-        err.statusCode=200
-        next(err)
+        // const err= new Error("read the file")
+        // err.status = 'success';
+        // err.statusCode=200
+        // next(err)
+        next()
     }
 }
 const authorizeAll=(...role)=>{

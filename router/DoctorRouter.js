@@ -2,11 +2,16 @@ const express = require('express');
 const router = express.Router();
 const Doctor=require('../models/Doctor')
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const {authenticte, authorize} = require("../middleware/Auth");
+const {ObjectId} = require("mongodb");
 // const {authorize, authenticte} = require("../middleware/Auth");
 
-router.post('/addDoctor',async (req,res,next)=>{
+router.post('/addDoctor',authenticte,authorize('admin'),async (req,res,next)=>{
   try {
-      const { name,email,role,age } = req.body;
+      const { name,email,password,role,age } = req.body;
+      const salt = await bcrypt.genSalt(10);
+      const doctorPassword=await bcrypt.hash(password,salt);
       const userAvailable=await Doctor.findOne({email})
       if(userAvailable){
           const err=new Error('User already registered')
@@ -17,6 +22,7 @@ router.post('/addDoctor',async (req,res,next)=>{
       const newUser = await Doctor.create({
           name: name,
           email: email,
+          password:doctorPassword,
           role:role,
           age:age
       })
@@ -27,7 +33,7 @@ router.post('/addDoctor',async (req,res,next)=>{
   }
 })
 
-router.get('/showDoctor',async (req, res) => {
+router.get('/showDoctor',authenticte,authorize('admin'),async (req, res) => {
     try {
         const doctorCollection = mongoose.connection.db.collection('doctors');
         const savedDoctors = await doctorCollection.find({}).toArray();
@@ -37,12 +43,37 @@ router.get('/showDoctor',async (req, res) => {
         res.status(500).json({error: 'An error occurred while fetching doctors'});
     }
 })
-router.delete('/deleteDoctor/:id',async (req,res)=>{
+router.delete('/deleteDoctor/:id',authenticte,authorize('admin'),async (req,res)=>{
     try {
         const doctorId = req.params.id;
         const findToDelete = await Doctor.findById(doctorId);
         const detUser=await Doctor.deleteOne(findToDelete)
         res.status(200).json({detUser})
+    }catch (e) {
+        console.log(e)
+    }
+})
+
+router.put('/editDoctor/:id',async (req,res)=>{
+    try {
+        const doctorId = req.params.id;
+        const { name, email, password, age, role } = req.body;
+        const salt = await bcrypt.genSalt(10);
+        const doctorPassword=await bcrypt.hash(password,salt);
+        const updatedDoctor = await Doctor.findOneAndUpdate(
+            { _id: new ObjectId(doctorId) },
+            {
+                $set: {
+                    name: name,
+                    email: email,
+                    password: doctorPassword,
+                    age: age,
+                    role: role
+                }
+            },
+               { new: true }
+            )
+        res.status(200).json({updatedDoctor})
     }catch (e) {
         console.log(e)
     }
