@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const jwt = require("jsonwebtoken");
 
 const doctorsSchema = mongoose.Schema({
     name: {
@@ -26,5 +27,20 @@ const doctorsSchema = mongoose.Schema({
         required: true,
     }
 })
+doctorsSchema.methods.generateToken=function async (){
+    try {
+        return jwt.sign(
+            {
+                id:this._id.toString(),
+                email:this.email,
+                role:this.role
+            },
+            process.env.JWT_SECRET_KEY,
+            {expiresIn: '2d'})
+
+    }catch (e) {
+        console.error(e);
+    }
+}
 const doctor = mongoose.model('Doctor',doctorsSchema);
 module.exports=doctor

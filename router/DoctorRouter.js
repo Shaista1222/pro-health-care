@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const {authenticte, authorize, authorizeAll} = require("../middleware/Auth");
 const {ObjectId} = require("mongodb");
-// const {authorize, authenticte} = require("../middleware/Auth");
 
 router.post('/addDoctor',authenticte,authorize('admin'),async (req,res,next)=>{
   try {
@@ -54,30 +53,70 @@ router.delete('/deleteDoctor/:id',authenticte,authorize('admin'),async (req,res)
     }
 })
 
-router.put('/editDoctor/:id',authenticte,authorizeAll('admin','doctor'),async (req,res)=>{
+router.put('/editDoctor/:id', authenticte, authorizeAll('admin', 'doctor'), async (req, res, next) => {
     try {
         const doctorId = req.params.id;
         const { name, email, password, age, role } = req.body;
-        const salt = await bcrypt.genSalt(10);
-        const doctorPassword=await bcrypt.hash(password,salt);
+
+        let updateFields = { name, email, age, role };
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            updateFields.password = await bcrypt.hash(password, salt);
+        }
+
         const updatedDoctor = await Doctor.findOneAndUpdate(
             { _id: new ObjectId(doctorId) },
-            {
-                $set: {
-                    name: name,
-                    email: email,
-                    password: doctorPassword,
-                    age: age,
-                    role: role
-                }
-            },
-               { new: true }
-            )
-        res.status(200).json({updatedDoctor})
+            { $set: updateFields },
+            { new: true }
+        );
+
+        if (!updatedDoctor) {
+            return res.status(404).json({ status: 'fail', message: 'Doctor not found' });
+        }
+
+        res.status(200).json({ status: 'success', message: 'Doctor successfully edited', data: updatedDoctor });
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.post('/login',async(req, res,next) => {
+    try {
+        const {email,password} = req.body;
+
+        const doctor = await Doctor.findOne({email});
+        if (!doctor) {
+            const err=new Error('Please provide correct credentials to enter')
+            err.status = 'fail';
+            err.statusCode=400
+            next(err)
+            // return res.status(400).json({ errors: "Please provide correct credentials" });
+        }
+        let comparePass =await bcrypt.compare(password, doctor.password)
+        if (!comparePass) {
+            const err=new Error('Please provide correct credentials to enter')
+            err.status = 'fail';
+            err.statusCode=400
+            next(err)
+            // return res.status(400).json({ errors: "Please provide correct credentials" });
+        }
+
+        if(doctor && comparePass){
+
+            return res.status(200).json({
+                message:"Successfully logged in",
+                token:await doctor.generateToken(),
+                id:doctor._id.toString()});
+
+        }else {
+            const err=new Error('Wrong email or password')
+            err.status = 'fail';
+            err.statusCode=400
+            next(err)
+        }
     }catch (e) {
-        console.log(e)
+        console.error(e);
     }
 })
-
 module.exports=router
 

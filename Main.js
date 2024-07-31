@@ -13,6 +13,7 @@ app.use(express.json())
 
 app.use('/api',Register);
 app.use('/doctor',DoctorRouter)
+app.use('/doctor/:id',DoctorRouter)
 
 app.use((error, req, res, next)=>{
     error.statusCode=error.statusCode||500;

@@ -23,7 +23,7 @@ const authenticte=(req,res,next)=>{
         err.statusCode=401
         next(err)
         // res.status(401).json({ msg: 'Token is not valid' });
-        // console.error(e)
+        console.error(e)
     }
 }
 const authorize=(role)=>{
@@ -44,15 +44,17 @@ const authorize=(role)=>{
 const authorizeAll=(...role)=>{
     return (req,res,next)=>{
         const userRole = req.user.role;
-        role.forEach(roles=>{
-           if(roles.includes(userRole)){
-              return next()
+        console.log("user roles", userRole)
+        // role.forEach(roles=>{
+           if(!role.includes(userRole)){
+               const err= new Error("You are not valid user, you can not enter")
+               err.status = 'fail';
+               err.statusCode=401
+               next(err)
+
            }
-            const err= new Error("You are not valid user, you can not enter")
-            err.status = 'fail';
-            err.statusCode=401
-            next(err)
-        })
+           next()
+        // })
     }
 }
 module.exports = {authenticte, authorize, authorizeAll};
