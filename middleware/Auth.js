@@ -43,13 +43,10 @@ const authorize=(role)=>{
 }
 const authorizeAll=(...role)=>{
     return (req,res,next)=>{
+        const userRole = req.user.role;
         role.forEach(roles=>{
-           if(roles.includes(req.user.role)){
-               const err= new Error("You are valid to hit the endpoint")
-               err.status = 'success';
-               err.statusCode=200
-               next(err)
-              // res.status(200).send('authorized')
+           if(roles.includes(userRole)){
+              return next()
            }
             const err= new Error("You are not valid user, you can not enter")
             err.status = 'fail';

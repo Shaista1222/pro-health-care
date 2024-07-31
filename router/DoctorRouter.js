@@ -3,7 +3,7 @@ const router = express.Router();
 const Doctor=require('../models/Doctor')
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const {authenticte, authorize} = require("../middleware/Auth");
+const {authenticte, authorize, authorizeAll} = require("../middleware/Auth");
 const {ObjectId} = require("mongodb");
 // const {authorize, authenticte} = require("../middleware/Auth");
 
@@ -54,7 +54,7 @@ router.delete('/deleteDoctor/:id',authenticte,authorize('admin'),async (req,res)
     }
 })
 
-router.put('/editDoctor/:id',async (req,res)=>{
+router.put('/editDoctor/:id',authenticte,authorizeAll('admin','doctor'),async (req,res)=>{
     try {
         const doctorId = req.params.id;
         const { name, email, password, age, role } = req.body;
