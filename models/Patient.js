@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
+const jwt = require("jsonwebtoken");
 
 const patientSchema = mongoose.Schema({
+    doctor_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Doctor",
+    },
     name: {
         type: String,
         required: true,
@@ -12,10 +17,9 @@ const patientSchema = mongoose.Schema({
         required: true,
         unique: true,
     },
-    role:{
-        type:String,
-        enum:['doctor','admin','patient'],
-        default: 'user',
+    password:{
+      type: String,
+      required: true,
     },
     age:{
         type: Number,
@@ -23,5 +27,20 @@ const patientSchema = mongoose.Schema({
     }
 
 })
+patientSchema.methods.generateToken=function async (){
+    try {
+        return jwt.sign(
+            {
+                id:this._id.toString(),
+                email:this.email,
+                role:this.role
+            },
+            process.env.JWT_SECRET_KEY,
+            {expiresIn: '2d'})
+
+    }catch (e) {
+        console.error(e);
+    }
+}
 const Patient = mongoose.model('Patient',patientSchema);
 module.exports=Patient

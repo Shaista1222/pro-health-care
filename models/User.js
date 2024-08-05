@@ -18,7 +18,7 @@ const userSchema=mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['patient','admin','doctor'],
+        enum:['patient','admin'],
         default: 'user',
     }
 })

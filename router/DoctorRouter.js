@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const {authenticte, authorize, authorizeAll} = require("../middleware/Auth");
 const {ObjectId} = require("mongodb");
+const Patient = require("../models/Patient");
 
 router.post('/addDoctor',authenticte,authorize('admin'),async (req,res,next)=>{
   try {
@@ -118,5 +119,11 @@ router.post('/login',async(req, res,next) => {
         console.error(e);
     }
 })
+//patient against doctor
+
+
 module.exports=router
 
+//const task = await Task.findById('5c2e505a3253e18a43e612e6')
+// await task.populate('owner').execPopulate()
+// console.log(task.owner)
