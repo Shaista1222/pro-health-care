@@ -14,7 +14,6 @@ app.use(express.json())
 
 app.use('/api',Register);
 app.use('/doctor',DoctorRouter)
-app.use('/doctor/:id',DoctorRouter)
 app.use('/patient',PatientRouter)
 
 

@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const jwt = require("jsonwebtoken");
 
 const doctorsSchema = mongoose.Schema({
-    patient_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Patient'
-    },
+    // patient_id:{
+    //     type:mongoose.Schema.Types.ObjectId,
+    //     ref:'Patient'
+    // },
     name: {
         type: String,
         required: true,

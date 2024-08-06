@@ -3,39 +3,52 @@ const router = express.Router();
 const Patient= require('../models/Patient');
 const Doctor=require('../models/Doctor');
 const bcrypt = require("bcrypt");
-
+const joi=require('joi')
+const fs = require("node:fs");
 
 router.post('/Register', async(req, res,next) => {
     try {
+        const schema=joi.object().keys({
+            name:joi.string().required().min(3).max(250),
+            email:joi.string().email().required(),
+            password:joi.string().required().min(4),
+            age:joi.number().required(),
+        })
+        const { body } = req;
+        const { name, email, password, age } = body;
+        const { error } = schema.validate(body);
 
-        const { name,email,password,age } = req.body;
+        if (error) {
+            return res.status(400).send('Validation failed');
+        }
+        console.log("successfully registered")
         const salt = await bcrypt.genSalt(10);
         const userPassword=await bcrypt.hash(password,salt);
         const userAvailable=await Patient.findOne({email})
-        if(userAvailable){
-            const err=new Error('User already registered')
+        if (userAvailable) {
+            const err = new Error('User already registered');
             err.status = 'fail';
-            err.statusCode=400
-            next(err)
-            // res.send({message:"User already registered"})
-        }else {
+            err.statusCode = 400;
+            return next(err);
+        } else {
             const newUser = await Patient.create({
-                name: name,
-                email: email,
+                name,
+                email,
                 password: userPassword,
-                age:age
-            })
-            // const saved= await newUser.save();
-            const err=new Error('Successfully registered.')
-            err.status = 'success';
-            err.statusCode=200
-            next(err)
+                age
+            });
+
+            return res.status(201).json({
+                status: 'success',
+                message: 'Successfully registered.',
+                user: newUser
+            });
         }
-    }catch (e) {
+    } catch (e) {
         console.error(e);
-        res.json({ success: false });
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
-})
+});
 router.post('/login',async(req, res,next) => {
     try {
         const {email,password} = req.body;
@@ -135,35 +148,61 @@ router.delete('/deleteAll/:id',async (req,res,next)=>{
     }
 })
 //get all doctors with all their patients
-router.get('/get',async (req,res,next)=>{
+router.get('/get', async (req, res, next) => {
     try {
-        const getAll=await Patient.aggregate([
+        const getAll = await Patient.aggregate([
             {
-                $lookup:{
-                    from:'doctors' +
-                        '',
-                    localField:'_id',
-                    foreignField:'doctor_id',
-                    as:'fetch'
-                }
+                $lookup: {
+                    from: 'doctors',
+                    localField: 'doctor_id',
+                    foreignField: '_id',
+                    as: 'doctor'
+                },
             },
-            { $project:{
-                    name:1,
-                    age:1,
-                    email:1
-                }}
-        ])
-        if(getAll){
-            res.status(200).json(getAll)
+            {
+                $project: {
+                    name: 1,
+                    age: 1,
+                    email: 1,
+                    doctor: {
+                        email: 1,
+                        name: 1
+                    }
+                }
+            }
+        ]);
+
+        if (getAll && getAll.length > 0) {
+            return res.status(200).json(getAll);
+        } else {
+            const err = new Error('There are no doctors associated with the patients');
+            err.status = 'fail';
+            err.statusCode = 400;
+            return next(err);
         }
-        const err= new Error('There is not doctor against patient')
-        err.status = 'fail';
-        err.statusCode = 400
-        next(err)
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+    }
+});
+
+router.get('/file',async (req,res,next)=>{
+    try {
+        fs.readFile("file.json","utf8",(error,datas)=>{
+            if (error) {
+                if (error.code === 'ENOENT') {
+                    console.error('File not found:', error.path);
+                } else {
+                    console.error('Error reading file:', error);
+                }
+                return;
+            }
+            const parseToJson= JSON.parse(datas);
+            res.status(200).json(parseToJson)
+
+        })
     }catch (e) {
         console.log(e)
     }
-
 })
-
 module.exports=router
