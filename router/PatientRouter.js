@@ -81,7 +81,6 @@ router.post('/login',async(req, res,next) => {
                 message:"Successfully logged in",
                 token:await patient.generateToken(),
                 id:patient._id.toString()});
-
         }else {
             const err=new Error('Wrong email or password')
             err.status = 'fail';
@@ -238,15 +237,17 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname);
-    }
+    },
 });
 
 // Create the multer instance
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage,limits: {
+        fileSize: 5242880
+    } });
 
-router.post('/file' ,upload.single('file'), (req, res) => {
+router.post('/file' ,upload.single('file'), (req, res,next) => {
     if (req.file) {
-        res.json({ message: 'File uploaded successfully!' });
+        res.json({ message: 'File uploaded successfully!'});
     } else {
         res.json({ message: 'Failed to upload file!' });
     }
