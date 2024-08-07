@@ -4,8 +4,13 @@ const Patient= require('../models/Patient');
 const Doctor=require('../models/Doctor');
 const bcrypt = require("bcrypt");
 const joi=require('joi')
-const fs = require("node:fs");
-
+const fs = require("fs");
+const path = require("path");
+const multer=require('multer')
+const uploadDir = path.join(__dirname,'../uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
 router.post('/Register', async(req, res,next) => {
     try {
         const schema=joi.object().keys({
@@ -186,23 +191,67 @@ router.get('/get', async (req, res, next) => {
     }
 });
 
-router.get('/file',async (req,res,next)=>{
-    try {
-        fs.readFile("file.json","utf8",(error,datas)=>{
-            if (error) {
-                if (error.code === 'ENOENT') {
-                    console.error('File not found:', error.path);
-                } else {
-                    console.error('Error reading file:', error);
-                }
-                return;
-            }
-            const parseToJson= JSON.parse(datas);
-            res.status(200).json(parseToJson)
+// router.get('/file',async (req,res,next)=>{
+//     try {
+//         fs.readFile("file.json","utf8",(error,datas)=>{
+//             if (error) {
+//                 if (error.code === 'ENOENT') {
+//                     console.error('File not found:', error.path);
+//                 } else {
+//                     console.error('Error reading file:', error);
+//                 }
+//                 return;
+//             }
+//             const parseToJson= JSON.parse(datas);
+//             res.status(200).json(parseToJson)
+//
+//         })
+//     }catch (e) {
+//         console.log(e)
+//     }
+// })
+router.post("/upload", async (req, res) => {
 
-        })
-    }catch (e) {
-        console.log(e)
+    let data = [];
+    req.on("data", (chunk) => {
+        data.push(chunk);
+    });
+    console.log(data)
+
+    req.on("end", () => {
+        let fileData = Buffer.concat(data); //joining all the parts pushed to the array in a completely formed
+        fs.writeFile(
+            'file.json',
+            fileData,
+            "base64",
+            (err) => {
+                if (err) {
+                    res.statusCode = 500;
+                }
+            }
+        );
+    });
+});
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
     }
-})
+});
+
+// Create the multer instance
+const upload = multer({ storage: storage });
+
+router.post('/file' ,upload.single('file'), (req, res) => {
+    if (req.file) {
+        res.json({ message: 'File uploaded successfully!' });
+    } else {
+        res.json({ message: 'Failed to upload file!' });
+    }
+});
+
+
+
 module.exports=router

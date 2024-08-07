@@ -10,8 +10,8 @@ const dbConnection = require('./Mongoose');
 
 dbConnection()
 // //express.json() middleware to your Express app. This middleware will parse incoming requests with JSON payloads.
-app.use(express.json())
-
+// app.use(express.json())
+app.use(express.urlencoded({extended:false}))
 app.use('/api',Register);
 app.use('/doctor',DoctorRouter)
 app.use('/patient',PatientRouter)

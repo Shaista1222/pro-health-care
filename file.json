@@ -1,1 +1,44 @@
-[{"firstName":"Alice","lastName":"Smith","gender":"Female","dob":"1980-04-04","phoneNumber":"2222222222","address":"321 Pine St","specialties":["Cardiology","Internal Medicine"]},{"firstName":"Alice","lastName":"Smith","gender":"Female","dob":"1980-04-04","phoneNumber":"2222222222","address":"321 Pine St","specialties":["Cardiology","Internal Medicine"]},{"firstName":"Alice","lastName":"Smith","gender":"Female","dob":"1980-04-04","phoneNumber":"2222222222","address":"321 Pine St","specialties":["Cardiology","Internal Medicine"]},{"firstName":"Alice","lastName":"Smith","gender":"Female","dob":"1980-04-04","phoneNumber":"2222222222","address":"321 Pine St","specialties":["Cardiology","Internal Medicine"]}]
+----------------------------752900909571780758176178
+Content-Disposition: form-data; name="file"; filename="Error.txt"
+Content-Type: text/plain
+
+----------ERRORs------------
+1) when name can not destructure from req.body
+express.json() middleware to your Express app. This middleware will parse incoming requests with JSON payloads.
+app.use(express.json())
+
+---The req.body property contains key-value pairs of data submitted in the request body. By default,
+it is undefined and is populated when you use a middleware called body-parsing such as express.urlencoded() or express.json(). 
+
+router is an instance of the Express Router. It is a mini Express application that can be used to create modular, mountable route handlers. 
+It allows you to organize your routes and middleware into separate modules.
+
+const app = express();
+Purpose:
+
+app is an instance of the main Express application. It represents the entire Express application and is used to set up the middleware, 
+routes, and other settings for the app.
+Usage:
+
+Typically used in the main entry file of the application (e.g., app.js or server.js).
+Used to configure global middleware, set up the main routes, and listen on a specific port.
+
+2) the error is solve(id:this.id) because i have used function rather than arrow function, 
+arrow functions does not have their own "this" keyword
+this inside an arrow function does not refer to the document instance but rather to the scope where the method was defined.
+By using a regular function, this correctly points to the instance of the Mongoose document, 
+allowing you to access the document’s properties such as _id and email. This is essential for schema methods in Mongoose to work correctly.
+
+3)Error: secretOrPrivateKey must have a value
+require('dotenv').config()
+
+
+
+
+
+
+
+
+
+
+----------------------------752900909571780758176178--
