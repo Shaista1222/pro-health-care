@@ -12,6 +12,7 @@
   },
   "private": true,
   "dependencies": {
+    "aws-sdk": "^2.1673.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
